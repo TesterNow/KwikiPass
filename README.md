@@ -1,4 +1,4 @@
 # KwikiPass
-Kwiki Pass setup examples
+Kwiki Pass sample
 
 https://kwikipass.com
