@@ -1,0 +1,139 @@
+<html lang="en" dir="ltr">
+   <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   </head>
+   <body>
+     <style>
+       .qrcode-container {
+         text-align: center;
+         width: 250px;
+         height: 250px;
+         margin:  0 auto;
+       }
+     </style>
+     <div class="qrcode-container">
+       <div id="qrcode">
+       </div>
+       <div>
+         <img src="https://kwikipass.com/shared/titlelogo.svg" width="150" height="auto" />
+       </div>
+     </div>
+   </body>
+</html>
+     
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js" integrity="sha384-mZLF4UVrpi/QTWPA7BjNPEnkIfRFn4ZEO3Qt/HFklTJBj/gBOV8G3HcKn4NfQblz" crossorigin="anonymous"></script>
+<script type="text/javascript" src="client-helper.js"></script>
+// client-helper.js -> Helper to print QR code and detect device.
+
+const device = GetDevice();
+
+<script type="text/javascript">
+  //Signup function to show QR
+  function Signup()
+  {
+    // Signup Payload
+    const payload = 
+          {
+            Kwikipass: {
+              Signup: {
+                Account: {
+                  Domain: domain,
+                  User: "INSERT_USERNAME",
+                  Name: "INSERT_NAME",
+                  ClientId: clientId, // Only include if you have a contracted plan.
+                  //Optional parameters
+                  //Tag, Icon, Post, Socket
+                },
+                Room: room,
+                Device: device,
+                //Optional parameters
+                //Max_Users
+              }
+            }
+          };
+    // Login Payload
+    const login_payload = 
+          {
+            Kwikipass: {
+              Login: {
+                  Domain: domain,
+                  Room: room,
+                  Device: device,
+                //Optional parameters to filter account in the app:
+                //ClientId, Tag, Name
+              },
+            }
+          };
+    // if you want to open the app on the same device
+    // you can launch de app with the follow link. The payload must be in BASE64
+    const payload_Base64 = "https://kwikipass.com/send?code="+btoa(JSON.stringify(payload));
+    
+    PrintQR(
+      payload,
+      document.getElementById("qrcode") //YOUR-CONTAINER-ID
+    );
+  }
+  
+  // Get API KEY
+  const id = "GENERATE AND INSERT YOUR API KEY";
+  
+  //-----
+  //Optional way to call your GenerateAPIKey.php file
+  const xhttp = new XMLHttpRequest();
+  xhttp.onload = function() {
+    id = this.responseText;
+  }
+  xhttp.open("GET", "https://example.com/GenerateAPIKey.php", false); // Replace example.com with your domain.
+  xhttp.send();
+  //-----
+  
+  // Sample code to use Socket.IO in JavaScript
+  const socket = "REPLACE_WITH_YOUR_SOCKET_URL"; // Write the url that appears in your dashboard
+  const clientId = "INSERT_YOUR_CLIENTID"; // You can look for the client id in your dashboard
+  const domain = "YOUR_DOMAIN"; // https://example.com
+  var room = "";
+  
+  const socket = io(socket, {secure: true, rejectUnauthorized: true, autoConnect: false, auth:{ key:id, clientId:clientId, domain:domain }});
+  socket.connect();
+  
+  socket.on("connect", () => {
+    room = socket.id;
+    Signup(); // or Login
+  });
+  
+  socket.on("signup_response", (data) => {
+    // Submit the data using your form.
+    $("#user-signup").val(data.user);
+    $("#rsa-signup").val(data.rsa);
+    $("#aes-signup").val(data.aes);
+    $("#room-signup").val(room);
+    $("#signup-form").submit();
+  });
+  
+  socket.on("login_response", (data) => {
+    // Submit the data using your form.
+    $("#user-login").val(data.user);
+    $("#aes-login").val(data.aes);
+    $("#room-login").val(room);
+    $("#login-form").submit();
+  });
+  
+  socket.on("connect_error", (err) => {
+  });
+</script>
+
+
+<form style="display: none" action="login.php" method="POST" id="login-form">
+  <input type="hidden" id="user-login" name="user" value=""/>
+  <input type="hidden" id="aes-login" name="aes" value=""/>
+  <input type="hidden" id="room-login" name="room" value=""/>
+</form>
+
+<form style="display: none" action="signup.php" method="POST" id="signup-form">
+  <input type="hidden" id="user-signup" name="user" value=""/>
+  <input type="hidden" id="rsa-signup" name="rsa" value=""/>
+  <input type="hidden" id="aes-signup" name="aes" value=""/>
+  <input type="hidden" id="room-signup" name="room" value=""/>
+</form>
