@@ -1,0 +1,24 @@
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js" integrity="sha384-mZLF4UVrpi/QTWPA7BjNPEnkIfRFn4ZEO3Qt/HFklTJBj/gBOV8G3HcKn4NfQblz" crossorigin="anonymous"></script>
+<script type="text/javascript">
+  const socket = "REPLACE_WITH_YOUR_SOCKET_URL"; // Write the url that appears in your dashboard
+  var room = "INSERT_USER_ROOM";
+  
+  const socket = io(socket, {secure: true, rejectUnauthorized: true, autoConnect: false, auth:{ room:room }});
+  socket.connect();
+  socket.on("connect", () => {
+  });
+  socket.on("logout", () => {
+    //If the web page is offline when the user logs out from the app, the logout notice will not be received.
+    // ... your logout code
+  });
+  socket.on("connect_error", (err) => {
+    //If you try to reconnect to a session (room) that no longer exists or was closed by the user, it will return a connect_error.
+    // ... your logout code
+  });
+
+  function Logout()
+  {
+    // to emit a logout message
+    socket.emit("logout", room);
+  }
+</script>
