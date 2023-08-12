@@ -76,7 +76,7 @@
   }
   
   // Get API KEY
-  const id = "GENERATE AND INSERT YOUR API KEY";
+  var id = "GENERATE AND INSERT YOUR API KEY";
   
   //-----
   //Optional way to call your GenerateAPIKey.php file
@@ -89,12 +89,12 @@
   //-----
   
   // Sample code to use Socket.IO in JavaScript
-  const socket = "REPLACE_WITH_YOUR_SOCKET_URL"; // Write the url that appears in your dashboard
+  const server = "REPLACE_WITH_YOUR_SOCKET_URL"; // Write the url that appears in your dashboard
   const clientId = "INSERT_YOUR_CLIENTID"; // You can look for the client id in your dashboard
   const domain = "YOUR_DOMAIN"; // https://example.com
   var room = "";
   
-  const socket = io(socket, {secure: true, rejectUnauthorized: true, autoConnect: false, auth:{ key:id, clientId:clientId, domain:domain }});
+  const socket = io(server, {secure: true, rejectUnauthorized: true, autoConnect: false, auth:{ key:id, clientId:clientId, domain:domain }});
   socket.connect();
   
   socket.on("connect", () => {
